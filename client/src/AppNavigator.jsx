@@ -1,58 +1,22 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router";
+import {
+  authRoutes,
+  nonAuthRoutes,
+  publicRoutes,
+} from "../../server/src/constants/routes";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function AuthLayout() {
-  return (
-    <div>
-      <header>Auth Layout</header>
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  );
-}
-function ProtectedLayout() {
-  return (
-    <div>
-      <header>ProtectedLayout Layout</header>
-      <main>
-        <Outlet />
-      </main>
-    </div>
-  );
-}
-
-function Login() {
-  return "Login";
-}
-function Register() {
-  return "Register";
-}
-
-function Fields() {
-  return "Fields";
-}
-function Forms() {
-  return "Forms";
-}
-
-function SubmitForm() {
-  return "SubmitForm";
-}
+const routes = [...publicRoutes, ...nonAuthRoutes, ...authRoutes];
 
 export function AppNavigator() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<AuthLayout />}>
-          <Route index path="login?" element={<Login />} />
-          <Route path="register" element={<Register />} />
+        <Route path="/" element={<ProtectedRoute />}>
+          {routes.map(({ path, Component }) => (
+            <Route key={path} path={path} element={<Component />} />
+          ))}
         </Route>
-
-        <Route element={<ProtectedLayout />} path="concerts">
-          <Route index path="fields" element={<Fields />} />
-          <Route path="forms" element={<Forms />} />
-        </Route>
-        <Route element={<SubmitForm />} />
       </Routes>
     </BrowserRouter>
   );
