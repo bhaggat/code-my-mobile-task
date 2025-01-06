@@ -7,7 +7,6 @@ export const createField = async (req, res, next) => {
       where: {
         userId: req.userId,
         name: req.body.name,
-        fieldType: req.body.fieldType,
       },
     });
     if (existingField) {

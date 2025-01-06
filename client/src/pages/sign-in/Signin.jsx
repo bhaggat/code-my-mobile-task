@@ -10,6 +10,7 @@ import { useYupValidationResolver } from "@/hooks/useYupValidationResolver";
 import { validations } from "@/services/validations";
 import { useToast } from "@/hooks/useToast";
 import { InputField } from "@/components/input-field/InputField";
+import { useToastError } from "@/hooks/useToastError";
 
 const validationSchema = yup.object().shape({
   email: validations.email,
@@ -18,9 +19,8 @@ const validationSchema = yup.object().shape({
 
 const Signin = () => {
   const { setUser } = useUser();
-  const [signin, { isLoading }] = useSigninMutation();
   const { toast } = useToast();
-
+  const [signin, { isLoading }] = useSigninMutation();
   const resolver = useYupValidationResolver(validationSchema);
   const {
     handleSubmit,
@@ -28,19 +28,7 @@ const Signin = () => {
     setError,
     formState: { errors },
   } = useForm({ resolver });
-
-  const handleResponseError = (error) => {
-    if (error?.data?.errors) {
-      error?.data.errors?.forEach(({ field, message }) => {
-        setError(field, { type: "server", message });
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: error?.message || "Something went wrong",
-      });
-    }
-  };
+  const handleResponseError = useToastError({ setError });
 
   const onSubmit = async (data) => {
     try {

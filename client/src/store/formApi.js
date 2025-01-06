@@ -1,28 +1,28 @@
 import { authApi } from "./authApi";
 
-const fieldApi = authApi.injectEndpoints({
+const formApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
-    getFields: builder.query({
-      providesTags: ["Fields"],
+    getForms: builder.query({
+      providesTags: ["Form"],
       query: (params) => ({
-        url: "fields",
+        url: "forms",
         params,
       }),
     }),
-    createField: builder.mutation({
+    createForm: builder.mutation({
       query: (body) => ({
-        url: "fields",
+        url: "forms",
         method: "POST",
         body,
       }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
-        dispatch(authApi.util.invalidateTags(["Fields"]));
+        dispatch(authApi.util.invalidateTags(["Form"]));
       },
     }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetFieldsQuery, useCreateFieldMutation } = fieldApi;
-export default fieldApi;
+export const { useGetFormsQuery, useCreateFormMutation } = formApi;
+export default formApi;

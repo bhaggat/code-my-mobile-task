@@ -3,12 +3,13 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSignupMutation } from "@/store/authApi";
 import { useYupValidationResolver } from "@/hooks/useYupValidationResolver";
 import { validations } from "@/services/validations";
 import { useToast } from "@/hooks/useToast";
 import { InputField } from "@/components/input-field/InputField";
+import { useToastError } from "@/hooks/useToastError";
 
 const validationSchema = yup.object().shape({
   email: validations.email,
@@ -18,6 +19,7 @@ const validationSchema = yup.object().shape({
 
 const Signup = () => {
   const [signup, { isLoading }] = useSignupMutation();
+  const navigator = useNavigate();
   const { toast } = useToast();
 
   const resolver = useYupValidationResolver(validationSchema);
@@ -27,25 +29,14 @@ const Signup = () => {
     setError,
     formState: { errors },
   } = useForm({ resolver });
-
-  const handleResponseError = (error) => {
-    if (error?.data?.errors) {
-      error?.data.errors?.forEach(({ field, message }) => {
-        setError(field, { type: "server", message });
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: error?.message || "Something went wrong",
-      });
-    }
-  };
+  const handleResponseError = useToastError({ setError });
 
   const onSubmit = async (data) => {
     try {
       const response = await signup(data);
       if (response?.data?.success) {
         toast({ variant: "success", title: "Signup successful." });
+        navigator("/signin");
       } else {
         handleResponseError(response?.error);
       }

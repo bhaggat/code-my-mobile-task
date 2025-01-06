@@ -12,12 +12,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { InputField } from "../input-field/InputField";
-import { useAddFieldMutation } from "@/store/fieldApi";
-import { toast } from "sonner";
+import { useCreateFieldMutation } from "@/store/fieldApi";
 import { useYupValidationResolver } from "@/hooks/useYupValidationResolver";
 import { useForm } from "react-hook-form";
 import { useCallback, useState } from "react";
 import { supportedInputTypes } from "@/constants/constants";
+import { useToastError } from "@/hooks/useToastError";
+import { useToast } from "@/hooks/useToast";
 
 const validationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
@@ -25,7 +26,8 @@ const validationSchema = yup.object().shape({
 });
 
 function AddFieldDialog({ handleClose }) {
-  const [addField, { isLoading }] = useAddFieldMutation();
+  const { toast } = useToast();
+  const [createField, { isLoading }] = useCreateFieldMutation();
 
   const resolver = useYupValidationResolver(validationSchema);
   const form = useForm({ resolver });
@@ -35,26 +37,14 @@ function AddFieldDialog({ handleClose }) {
     setError,
     formState: { errors },
   } = form;
-  const handleResponseError = (error) => {
-    console.log("errors", error);
-    if (error?.data?.errors) {
-      error?.data.errors?.forEach(({ field, message }) => {
-        setError(field, { type: "server", message });
-      });
-    } else {
-      toast({
-        variant: "destructive",
-        title: error?.message || error?.data?.message || "Something went wrong",
-      });
-    }
-  };
+  const handleResponseError = useToastError({ setError });
 
   const onSubmit = async (data) => {
     try {
-      const response = await addField(data);
+      const response = await createField(data);
       if (response?.data?.success) {
         handleClose();
-        toast({ variant: "success", title: "Signin successful." });
+        toast({ variant: "success", title: "Fiald created successfully." });
       } else {
         handleResponseError(response?.error);
       }
@@ -66,9 +56,9 @@ function AddFieldDialog({ handleClose }) {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Add New Field</DialogTitle>
+        <DialogTitle>Create New Field</DialogTitle>
         <DialogDescription>
-          Add field to use it to create form.
+          Create field to use it to create form.
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)}>

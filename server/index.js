@@ -10,6 +10,7 @@ import { mongooseConnection } from "./src/dbs/mongoDb.js";
 import formFieldRouter from "./src/routes/formFieldRouter.js";
 import formSubmitRouter from "./src/routes/formSubmitRouter.js";
 import fileRouter from "./src/routes/fileRouter.js";
+import formRouter from "./src/routes/formRouter.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -42,6 +43,7 @@ app.use("/fields", fieldRouter);
 app.use("/form-fields", formFieldRouter);
 app.use("/form-submits", formSubmitRouter);
 app.use("/files", fileRouter);
+app.use("/forms", formRouter);
 
 app.listen(PORT, () => {
   console.info(`Server running at http://localhost:${PORT}`, { version });

@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetFieldsQuery } from "@/store/fieldApi";
-import { AddField } from "@/components/add-field/AddField";
+import { AddField } from "@/components/create-field/CreateField";
 import Loader from "@/components/loader/Loader";
 
 export const columns = [

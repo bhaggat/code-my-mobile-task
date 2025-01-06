@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { booleanSchema, metaSchema } from "./commonSchemas";
+import { booleanSchema, metaSchema } from "./commonSchemas.js";
 
 const buttonSchema = Joi.object();
 const titleSchema = Joi.string().min(3).max(100);

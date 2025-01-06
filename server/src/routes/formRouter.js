@@ -6,32 +6,32 @@ import {
   getForms,
   updateForm,
 } from "../controllers/formController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
 import { restrictUpdateFields } from "../middlewares/restrictFieldsMiddleware.js";
 import validatorMiddleware from "../middlewares/validatorMiddleware.js";
 import {
   createFormValidation,
   updateFormValidation,
 } from "../validations/formValidation.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const formRouter = Router();
 
 formRouter.use(authMiddleware);
 
-formRouter.get("/forms", getForms);
-formRouter.get("/forms/:id", getForm);
+formRouter.get("", getForms);
+formRouter.get("/:id", getForm);
 formRouter.post(
-  "/forms",
+  "",
   restrictUpdateFields,
   validatorMiddleware(createFormValidation),
   createForm
 );
 formRouter.patch(
-  "/forms/:id",
+  "/:id",
   restrictUpdateFields,
   validatorMiddleware(updateFormValidation),
   updateForm
 );
-formRouter.delete("/forms", deleteForm);
+formRouter.delete("", deleteForm);
 
 export default formRouter;
