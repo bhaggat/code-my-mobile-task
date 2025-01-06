@@ -25,14 +25,12 @@ fieldRouter.post(
   "",
   restrictUpdateFields,
   validatorMiddleware(createFieldValidation),
-  fileUploader,
   createField
 );
 fieldRouter.patch(
   "/:id",
   restrictUpdateFields,
   validatorMiddleware(updateFieldValidation),
-  fileUploader,
   updateField
 );
 fieldRouter.delete("", deleteField);

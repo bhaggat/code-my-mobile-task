@@ -1,7 +1,8 @@
 import Joi from "joi";
 import { booleanSchema, metaSchema, nameSchema } from "./commonSchemas.js";
+import { supportedInputTypes } from "../constants/constants.js";
 
-const fieldTypeSchema = Joi.string().valid("text", "number", "boolean");
+const fieldTypeSchema = Joi.string().valid(...supportedInputTypes);
 
 export const createFieldValidation = Joi.object({
   name: nameSchema,

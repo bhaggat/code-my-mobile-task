@@ -7,6 +7,7 @@ export default function validatorMiddleware(validator) {
       if (error) {
         const errors = error.details.map((detail) => ({
           message: detail.message,
+          field: detail.context.key,
         }));
         return res.status(422).json({ success: false, errors });
       }

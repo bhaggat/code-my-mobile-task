@@ -13,7 +13,7 @@ const PublicForm = () => {
   return (
     <div>
       <h1>PublicForm Page</h1>
-      <button onClick={toggleLogin}>{token ? "Logout" : "Login"}</button>
+      <button onClick={toggleLogin}>{token ? "Logout" : "Signin"}</button>
     </div>
   );
 };

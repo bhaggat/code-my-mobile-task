@@ -1,25 +1,48 @@
-import { createContext, useContext, useState } from "react";
+import {
+  decodeJWT,
+  deleteCookie,
+  getCookie,
+  setCookie,
+} from "@/services/utils";
+import { authApi } from "@/store/authApi";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 export const UserContext = createContext({
   isLoading: true,
 });
 
-export function useUser() {
-  const user = useContext(UserContext);
-  return user;
-}
-
 export default function UserProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(getCookie("token"));
+  const dispatch = useDispatch();
 
   function setUser(user) {
-    localStorage.setItem("token", user.token);
-    setToken(user.token);
+    const { token } = user;
+
+    const decodedToken = decodeJWT(token);
+    const expiresIn = decodedToken?.exp
+      ? decodedToken.exp - Math.floor(Date.now() / 1000)
+      : 0;
+
+    if (expiresIn > 0) {
+      setCookie("token", token, expiresIn);
+      setToken(token);
+    } else {
+      console.error("Invalid token expiration");
+    }
   }
+
   function removeUser() {
-    localStorage.removeItem("token");
-    setToken();
+    dispatch(authApi.util.resetApiState());
+
+    deleteCookie("token");
+    setToken(null);
   }
+
+  useEffect(() => {
+    setToken(getCookie("token"));
+  }, []);
+
   return (
     <UserContext.Provider
       value={{ isLoading: false, token, setUser, removeUser }}
@@ -27,4 +50,9 @@ export default function UserProvider({ children }) {
       {children}
     </UserContext.Provider>
   );
+}
+
+export function useUser() {
+  const user = useContext(UserContext);
+  return user;
 }
