@@ -17,4 +17,6 @@ export const authRoutes = [
   { path: "/fields", Component: Fields },
 ];
 
-export const publicRoutes = [{ path: "/public/forms", Component: PublicForm }];
+export const publicRoutes = [
+  { path: "/public/forms/:id", Component: PublicForm },
+];

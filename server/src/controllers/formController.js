@@ -95,16 +95,28 @@ export const getForm = async (req, res, next) => {
 
 export const getFormByPublicId = async (req, res, next) => {
   try {
-    console.log("req", req);
     const form = await Form.findOne({
-      where: { publicId: req.params.publicId },
+      where: { publicId: req.params.publicId, published: true },
     });
+
     if (!form) {
       return res
         .status(404)
         .json({ success: false, message: "Record not found" });
     }
-    res.status(200).json({ success: true, data: form });
+
+    const fieldIds = form.fields || [];
+    const fields = await Field.findAll({
+      where: { id: { [Op.in]: fieldIds } },
+      attributes: ["id", "name", "fieldType"],
+    });
+
+    const formWithFields = {
+      ...form.toJSON(),
+      fields,
+    };
+
+    res.status(200).json({ success: true, data: formWithFields });
   } catch (err) {
     console.error("Error fetching form:", err);
     next(err);

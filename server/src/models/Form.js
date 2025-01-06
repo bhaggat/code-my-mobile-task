@@ -12,7 +12,7 @@ const Form = sequelize.define(
     description: {
       type: DataTypes.STRING,
     },
-    isEnabled: {
+    published: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },

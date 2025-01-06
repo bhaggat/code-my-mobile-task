@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { CopyIcon, ExternalLinkIcon } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -20,30 +21,11 @@ import {
 import { useGetFormsQuery } from "@/store/formApi";
 import { CreateForm } from "@/components/create-form/CreateForm";
 import Loader from "@/components/loader/Loader";
-
-export const columns = [
-  {
-    accessorKey: "title",
-    header: "Title",
-  },
-  {
-    accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => {
-      const createdAt = new Date(row.original.createdAt);
-      return createdAt.toLocaleString();
-    },
-  },
-  {
-    accessorKey: "isEnabled",
-    header: "Enabled",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.isEnabled ? "Yes" : "No"}</div>
-    ),
-  },
-];
+import { useToast } from "@/hooks/useToast";
+import { Button } from "@/components/ui/button";
 
 export default function Forms() {
+  const { toast } = useToast();
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
 
@@ -60,6 +42,61 @@ export default function Forms() {
   const { data, isLoading, isError, isFetching } = useGetFormsQuery({
     search: debouncedSearch,
   });
+
+  const columns = React.useMemo(
+    () => [
+      {
+        accessorKey: "title",
+        header: "Title",
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Created At",
+        cell: ({ row }) => {
+          const createdAt = new Date(row.original.createdAt);
+          return createdAt.toLocaleString();
+        },
+      },
+      {
+        accessorKey: "published",
+        header: "Published",
+        cell: ({ row }) => (
+          <div className="capitalize">
+            {row.original.published ? "Yes" : "No"}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const publicId = row.original.publicId;
+          const formUrl = `${location.origin}/public/forms/${publicId}`;
+          const handleCopy = () => {
+            navigator.clipboard.writeText(formUrl).then(() => {
+              toast({
+                title: "Copied to clipboard",
+              });
+            });
+          };
+
+          return (
+            <div className="flex space-x-2">
+              <Button variant="outline" size="sm" onClick={handleCopy}>
+                <CopyIcon></CopyIcon>
+              </Button>
+              <Button variant="primary" size="sm">
+                <a href={formUrl} target="_blank">
+                  <ExternalLinkIcon></ExternalLinkIcon>
+                </a>
+              </Button>
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
 
   const table = useReactTable({
     data: data?.data || [],

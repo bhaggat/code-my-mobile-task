@@ -8,7 +8,7 @@ const descriptionSchema = Joi.string().optional();
 export const createFormValidation = Joi.object({
   title: titleSchema.required(),
   description: descriptionSchema,
-  isEnabled: booleanSchema.optional(),
+  published: booleanSchema.optional(),
   fields: buttonSchema.required(),
   meta: metaSchema,
 });
@@ -16,7 +16,7 @@ export const createFormValidation = Joi.object({
 export const updateFormValidation = Joi.object({
   title: titleSchema.optional(),
   description: descriptionSchema,
-  isEnabled: booleanSchema.optional(),
+  published: booleanSchema.optional(),
   fields: buttonSchema.optional(),
   meta: metaSchema,
 }).min(1);

@@ -77,12 +77,7 @@ const Signin = () => {
               //   </Link>
               // }
             />
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading}
-              isLoading={isLoading}
-            >
+            <Button type="submit" className="w-full" isLoading={isLoading}>
               Sign in
             </Button>
           </div>

@@ -14,8 +14,6 @@ const formSubmitRouter = Router();
 
 formSubmitRouter.use(authMiddleware);
 
-formSubmitRouter.get("", getFormSubmits);
-formSubmitRouter.get("/:id", getFormSubmit);
 formSubmitRouter.post(
   "",
   restrictUpdateFields,

@@ -10,11 +10,33 @@ const formApi = authApi.injectEndpoints({
       }),
     }),
     createForm: builder.mutation({
-      query: (body) => ({
-        url: "forms",
-        method: "POST",
-        body,
+      query: (body) => {
+        console.log("body", body);
+        return {
+          url: "forms",
+          method: "POST",
+          body,
+        };
+      },
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        await queryFulfilled;
+        dispatch(authApi.util.invalidateTags(["Form"]));
+      },
+    }),
+    getPublicFormData: builder.query({
+      providesTags: ["Form"],
+      query: (id) => ({
+        url: `/forms/public/${id}`,
       }),
+    }),
+    submitForm: builder.mutation({
+      query: (body) => {
+        return {
+          url: "/form-submits",
+          method: "POST",
+          body,
+        };
+      },
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         await queryFulfilled;
         dispatch(authApi.util.invalidateTags(["Form"]));
@@ -24,5 +46,10 @@ const formApi = authApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useGetFormsQuery, useCreateFormMutation } = formApi;
+export const {
+  useGetFormsQuery,
+  useCreateFormMutation,
+  useGetPublicFormDataQuery,
+  useSubmitFormMutation,
+} = formApi;
 export default formApi;

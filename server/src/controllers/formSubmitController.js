@@ -29,6 +29,18 @@ export const getFormSubmit = async (req, res, next) => {
 
 export const createFormSubmit = async (req, res, next) => {
   try {
+    const formExists = await FormSubmit.findOne({
+      where: {
+        formId: req.body.formId,
+        email: req.body.email,
+      },
+    });
+    if (formExists) {
+      return res.status(409).json({
+        success: false,
+        message: `This form already submitted by ${req.body.email}`,
+      });
+    }
     const formSubmit = await FormSubmit.create({
       ...req.body,
       userId: req.userId,

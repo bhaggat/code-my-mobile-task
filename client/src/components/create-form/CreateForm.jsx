@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DndContext,
   closestCenter,
@@ -87,7 +88,7 @@ function SortableField({ field, onRemove, data }) {
   );
 }
 
-function CreateFormDialog({ handleClose }) {
+function CreateFormDialog() {
   const { toast } = useToast();
   const [createForm, { isLoading }] = useCreateFormMutation();
   const { data } = useGetFieldOptionsQuery();
@@ -101,9 +102,10 @@ function CreateFormDialog({ handleClose }) {
     formState: { errors },
   } = form;
   const handleResponseError = useToastError({ setError });
-
+  const [published, setpublished] = useState(true);
   const [selectedFields, setSelectedFields] = useState([]);
   const [showFieldSelect, setShowFieldSelect] = useState(false);
+  const [formUrl, setFormUrl] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -135,9 +137,13 @@ function CreateFormDialog({ handleClose }) {
       const response = await createForm({
         ...data,
         fields: selectedFields,
+        published,
       });
       if (response?.data?.success) {
-        handleClose();
+        console.log("response.data", response.data);
+        setFormUrl(
+          `${location.origin}/public/forms/${response.data?.data.publicId}`
+        );
         toast({ variant: "success", title: "Form created successfully." });
       } else {
         handleResponseError(response?.error);
@@ -146,6 +152,51 @@ function CreateFormDialog({ handleClose }) {
       handleResponseError(err);
     }
   };
+
+  if (formUrl) {
+    return (
+      <>
+        <DialogHeader>
+          <DialogTitle>Form Created</DialogTitle>
+          <DialogDescription>
+            Your form has been successfully created.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="p-4">
+          <p className="mb-4 text-sm">
+            Use the following link to access the form:
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={formUrl}
+              readOnly
+              className="flex-1 p-2 border rounded-md bg-gray-100 text-sm"
+            />
+            <Button
+              onClick={() => {
+                navigator.clipboard.writeText(formUrl).then(() => {
+                  toast({
+                    title: "Copied to clipboard",
+                  });
+                });
+              }}
+              variant="outline"
+            >
+              Copy URL
+            </Button>
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </>
+    );
+  }
 
   return (
     <>
@@ -162,6 +213,17 @@ function CreateFormDialog({ handleClose }) {
             register={register}
             error={errors?.title?.message}
           />
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="published"
+              onCheckedChange={setpublished}
+              checked={published}
+            />
+            <label htmlFor="published" className="text-sm font-medium">
+              Publish
+            </label>
+          </div>
 
           <div className="space-y-4">
             {selectedFields.length > 0 && (
@@ -244,18 +306,16 @@ function CreateFormDialog({ handleClose }) {
     </>
   );
 }
+
 export function CreateForm() {
   const [isOpen, setIsOpen] = useState(false);
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
-  }, []);
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Create Form</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <CreateFormDialog handleClose={handleClose} />
+        <CreateFormDialog />
       </DialogContent>
     </Dialog>
   );
