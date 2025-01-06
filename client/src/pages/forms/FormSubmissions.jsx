@@ -55,7 +55,6 @@ export default function FormSubmissions() {
     ],
     []
   );
-  console.log({ data });
 
   const table = useReactTable({
     data: data?.data?.form?.submits || [],
@@ -63,7 +62,6 @@ export default function FormSubmissions() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-  console.log({ table });
 
   return (
     <div className="w-full">
@@ -117,10 +115,6 @@ export default function FormSubmissions() {
                           </Table>
                         </div>
                       </AccordionTrigger>
-                      {console.log(
-                        "row.original.submittedData",
-                        row.original.submittedData
-                      )}
                       <AccordionContent>
                         <div className="px-4 py-3 bg-slate-50 border-t">
                           <div className="grid grid-cols-2 gap-4">

@@ -45,6 +45,8 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import ValidationWrapper from "../validation-wrapper/ValidationWrapper";
+import { Link } from "react-router-dom";
+import { PlusCircleIcon } from "lucide-react";
 
 const validationSchema = yup.object().shape({
   title: yup.string().required("Title is required"),
@@ -116,9 +118,8 @@ function CreateFormDialog({ handleClose, editForm }) {
     reset,
     formState: { errors },
   } = form;
-  const [published, setpublished] = useState(true);
+  const [published, setPublished] = useState(true);
   const [showFieldSelect, setShowFieldSelect] = useState(false);
-  const [formUrl, setFormUrl] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -145,7 +146,6 @@ function CreateFormDialog({ handleClose, editForm }) {
     setShowFieldSelect(false);
   }, []);
 
-  // Reset form when editForm changes
   useEffect(() => {
     if (editForm) {
       reset({
@@ -186,7 +186,6 @@ function CreateFormDialog({ handleClose, editForm }) {
       handleResponseError(err);
     }
   };
-  console.log({ selectedFields });
 
   return (
     <>
@@ -209,7 +208,7 @@ function CreateFormDialog({ handleClose, editForm }) {
           <div className="flex items-center gap-2">
             <Checkbox
               id="published"
-              onCheckedChange={setpublished}
+              onCheckedChange={setPublished}
               checked={published}
             />
             <label htmlFor="published" className="text-sm font-medium">
@@ -218,6 +217,19 @@ function CreateFormDialog({ handleClose, editForm }) {
           </div>
 
           <div className="space-y-4">
+            {!data?.data?.length && (
+              <div className="flex items-center justify-between p-4 border rounded-md bg-slate-50">
+                <span className="text-sm text-slate-600">
+                  No fields available
+                </span>
+                <Button variant="link" asChild>
+                  <Link to="/fields" className="flex items-center gap-2">
+                    <PlusCircleIcon className="h-4 w-4" />
+                    <span>Add Fields</span>
+                  </Link>
+                </Button>
+              </div>
+            )}
             {selectedFields.length > 0 && (
               <div className="space-y-2">
                 <h3 className="text-sm font-medium">Selected Fields:</h3>
@@ -301,8 +313,6 @@ function CreateFormDialog({ handleClose, editForm }) {
 
 export function CreateForm({ editForm, onClose }) {
   const [isOpen, setIsOpen] = useState(false);
-  console.log({ editForm });
-
   const handleClose = useCallback(() => {
     setIsOpen(false);
     onClose?.();
