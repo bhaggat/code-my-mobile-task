@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import Form from "../models/Form.js";
 import Field from "../models/Field.js";
+import FormSubmit from "../models/FormSubmit.js";
 
 export const createForm = async (req, res, next) => {
   try {
@@ -18,15 +19,13 @@ export const createForm = async (req, res, next) => {
     }
 
     if (req.body.fields.length > 0) {
-      console.log("req.body.fields", req.body.fields);
-      const invalidFields = await Field.findAll({
+      const fieldCount = await Field.count({
         where: {
           id: { [Op.in]: req.body.fields },
           userId: req.userId,
         },
       });
-      console.log(invalidFields.length);
-      if (invalidFields.length !== req.body.fields.length) {
+      if (fieldCount !== req.body.fields.length) {
         return res.status(400).json({
           success: false,
           message: "One or more fields are invalid.",
@@ -78,15 +77,29 @@ export const getForms = async (req, res, next) => {
 
 export const getForm = async (req, res, next) => {
   try {
-    const form = await Form.findById(req.params.id, {
+    const form = await Form.findByPk(req.params.id, {
       where: { userId: req.userId },
+      include: [
+        {
+          model: FormSubmit,
+          as: "submits",
+        },
+      ],
     });
+
     if (!form) {
       return res
         .status(404)
         .json({ success: false, message: "Record not found" });
     }
-    res.status(200).json({ success: true, data: form });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        form: form.toJSON(),
+        formSubmits: form.submits,
+      },
+    });
   } catch (err) {
     console.error("Error fetching form:", err);
     next(err);
@@ -97,15 +110,22 @@ export const getFormByPublicId = async (req, res, next) => {
   try {
     const form = await Form.findOne({
       where: { publicId: req.params.publicId, published: true },
+      attributes: ["id", "title", "fields", "description"],
     });
 
     if (!form) {
       return res
         .status(404)
-        .json({ success: false, message: "Record not found" });
+        .json({ success: false, message: "Form not found" });
     }
 
     const fieldIds = form.fields || [];
+    if (fieldIds.length === 0) {
+      return res
+        .status(200)
+        .json({ success: true, data: { ...form.toJSON(), fields: [] } });
+    }
+
     const fields = await Field.findAll({
       where: { id: { [Op.in]: fieldIds } },
       attributes: ["id", "name", "fieldType"],
@@ -125,24 +145,32 @@ export const getFormByPublicId = async (req, res, next) => {
 
 export const updateForm = async (req, res, next) => {
   try {
-    const form = await Form.findById(req.params.id, {
-      where: { userId: req.userId },
+    const existingForm = await Form.findOne({
+      where: {
+        userId: req.userId,
+        title: req.body.title,
+        id: { [Op.ne]: req.params.id },
+      },
     });
-    if (!form) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Record not found" });
+    console.log("form", existingForm);
+    if (existingForm) {
+      return res.status(409).json({
+        success: false,
+        message: "Form already exists with the same title!",
+      });
     }
 
-    const fieldIds = req.body.fields;
-    if (fieldIds?.length > 0) {
+    const form = await Form.findByPk(req.params.id, {
+      where: { userId: req.userId },
+    });
+    if (req.body.fields.length > 0) {
       const invalidFields = await Field.findAll({
         where: {
-          id: { [Op.notIn]: fieldIds },
+          id: { [Op.in]: req.body.fields },
+          userId: req.userId,
         },
       });
-
-      if (invalidFields.length > 0) {
+      if (invalidFields.length !== req.body.fields.length) {
         return res.status(400).json({
           success: false,
           message: "One or more fields are invalid.",
@@ -160,7 +188,7 @@ export const updateForm = async (req, res, next) => {
 
 export const deleteForm = async (req, res, next) => {
   try {
-    const form = await Form.findById(req.params.id, {
+    const form = await Form.findByPk(req.params.id, {
       where: { userId: req.userId },
     });
     if (!form) {

@@ -14,11 +14,11 @@ import {
 import { InputField } from "../input-field/InputField";
 import { useYupValidationResolver } from "@/hooks/useYupValidationResolver";
 import { useForm } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useToastError } from "@/hooks/useToastError";
 import { useToast } from "@/hooks/useToast";
-import { useCreateFormMutation } from "@/store/formApi";
-import { useGetFieldOptionsQuery } from "@/store/fieldApi";
+import { useCreateFormMutation, useUpdateFormMutation } from "@/store/formApi";
+import { useGetFieldOptionsQuery, useGetFieldsQuery } from "@/store/fieldApi";
 import {
   Select,
   SelectContent,
@@ -88,22 +88,35 @@ function SortableField({ field, onRemove, data }) {
   );
 }
 
-function CreateFormDialog() {
+function CreateFormDialog({ handleClose, editForm }) {
   const { toast } = useToast();
-  const [createForm, { isLoading }] = useCreateFormMutation();
-  const { data } = useGetFieldOptionsQuery();
+  const [createForm, { isLoading: isCreating }] = useCreateFormMutation();
+  const [updateForm, { isLoading: isUpdating }] = useUpdateFormMutation();
+  const {
+    data,
+    isLoading: fieldsLoading,
+    isError,
+    isFetching,
+  } = useGetFieldsQuery();
+
+  const [selectedFields, setSelectedFields] = useState(editForm?.fields || []);
 
   const resolver = useYupValidationResolver(validationSchema);
-  const form = useForm({ resolver });
+  const form = useForm({
+    resolver,
+    defaultValues: {
+      title: editForm?.title || "",
+    },
+  });
+
   const {
     handleSubmit,
     register,
     setError,
+    reset,
     formState: { errors },
   } = form;
-  const handleResponseError = useToastError({ setError });
   const [published, setpublished] = useState(true);
-  const [selectedFields, setSelectedFields] = useState([]);
   const [showFieldSelect, setShowFieldSelect] = useState(false);
   const [formUrl, setFormUrl] = useState(null);
 
@@ -132,19 +145,40 @@ function CreateFormDialog() {
     setShowFieldSelect(false);
   }, []);
 
+  // Reset form when editForm changes
+  useEffect(() => {
+    if (editForm) {
+      reset({
+        title: editForm.title,
+      });
+      setSelectedFields(editForm.fields?.map((item) => Number(item)) || []);
+    }
+  }, [editForm, reset]);
+
+  const handleResponseError = useToastError({ setError });
+
   const onSubmit = async (data) => {
     try {
-      const response = await createForm({
-        ...data,
-        fields: selectedFields,
-        published,
-      });
+      let response;
+      if (editForm) {
+        response = await updateForm({
+          id: editForm.id,
+          ...data,
+          fields: selectedFields,
+        });
+      } else {
+        response = await createForm({
+          ...data,
+          fields: selectedFields,
+        });
+      }
+
       if (response?.data?.success) {
-        console.log("response.data", response.data);
-        setFormUrl(
-          `${location.origin}/public/forms/${response.data?.data.publicId}`
-        );
-        toast({ variant: "success", title: "Form created successfully." });
+        handleClose();
+        toast({
+          variant: "success",
+          title: `Form ${editForm ? "updated" : "created"} successfully.`,
+        });
       } else {
         handleResponseError(response?.error);
       }
@@ -152,57 +186,15 @@ function CreateFormDialog() {
       handleResponseError(err);
     }
   };
-
-  if (formUrl) {
-    return (
-      <>
-        <DialogHeader>
-          <DialogTitle>Form Created</DialogTitle>
-          <DialogDescription>
-            Your form has been successfully created.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="p-4">
-          <p className="mb-4 text-sm">
-            Use the following link to access the form:
-          </p>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={formUrl}
-              readOnly
-              className="flex-1 p-2 border rounded-md bg-gray-100 text-sm"
-            />
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(formUrl).then(() => {
-                  toast({
-                    title: "Copied to clipboard",
-                  });
-                });
-              }}
-              variant="outline"
-            >
-              Copy URL
-            </Button>
-          </div>
-        </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
-      </>
-    );
-  }
+  console.log({ selectedFields });
 
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Create New Form</DialogTitle>
-        <DialogDescription>Create form to publish.</DialogDescription>
+        <DialogTitle>{editForm ? "Edit Form" : "Create New Form"}</DialogTitle>
+        <DialogDescription>
+          {editForm ? "Update form details." : "Create form to publish."}
+        </DialogDescription>
       </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col gap-6 mb-6">
@@ -293,8 +285,8 @@ function CreateFormDialog() {
           <ValidationWrapper error={errors?.fields?.message} />
         </div>
         <DialogFooter>
-          <Button type="submit" isLoading={isLoading}>
-            Create
+          <Button type="submit" isLoading={isCreating || isUpdating}>
+            {editForm ? "Update" : "Create"}
           </Button>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
@@ -307,15 +299,29 @@ function CreateFormDialog() {
   );
 }
 
-export function CreateForm() {
+export function CreateForm({ editForm, onClose }) {
   const [isOpen, setIsOpen] = useState(false);
+  console.log({ editForm });
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    onClose?.();
+  }, [onClose]);
+
+  // Open modal when editForm is provided
+  useEffect(() => {
+    if (editForm) {
+      setIsOpen(true);
+    }
+  }, [editForm]);
+
   return (
     <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Create Form</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <CreateFormDialog />
+        <CreateFormDialog handleClose={handleClose} editForm={editForm} />
       </DialogContent>
     </Dialog>
   );

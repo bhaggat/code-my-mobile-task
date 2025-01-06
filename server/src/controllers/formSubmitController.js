@@ -13,7 +13,7 @@ export const getFormSubmits = async (req, res, next) => {
 
 export const getFormSubmit = async (req, res, next) => {
   try {
-    const formSubmit = await FormSubmit.findById(req.params.id, {
+    const formSubmit = await FormSubmit.findByPk(req.params.id, {
       where: { userId: req.userId },
     });
     if (!formSubmit) {

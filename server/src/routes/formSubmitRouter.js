@@ -13,5 +13,4 @@ formSubmitRouter.post(
   validatorMiddleware(createFormSubmitValidation),
   createFormSubmit
 );
-
 export default formSubmitRouter;

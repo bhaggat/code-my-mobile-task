@@ -28,8 +28,7 @@ export async function signup(req, res) {
     next(err);
   }
 }
-
-export async function signin(req, res) {
+export async function signin(req, res, next) {
   try {
     const user = await User.findOne({
       where: {
@@ -39,7 +38,7 @@ export async function signin(req, res) {
     if (!user) {
       return res
         .status(404)
-        .json({ success: false, message: "User Not found." });
+        .json({ success: false, message: "User not found." });
     }
 
     const passwordIsValid = compareSync(req.body.password, user.password);
@@ -66,6 +65,7 @@ export async function signin(req, res) {
       },
     });
   } catch (err) {
+    console.error("Signin Error:", err);
     next(err);
   }
 }

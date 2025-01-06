@@ -9,18 +9,26 @@ const formApi = authApi.injectEndpoints({
         params,
       }),
     }),
+    getFormSubmissions: builder.query({
+      providesTags: ["Form"],
+      query: (id) => ({
+        url: `forms/${id}`,
+        params,
+      }),
+    }),
     createForm: builder.mutation({
-      query: (body) => {
-        console.log("body", body);
-        return {
-          url: "forms",
-          method: "POST",
-          body,
-        };
-      },
+      query: (body) => ({
+        url: "forms",
+        method: "POST",
+        body,
+      }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        await queryFulfilled;
-        dispatch(authApi.util.invalidateTags(["Form"]));
+        try {
+          await queryFulfilled;
+          dispatch(authApi.util.invalidateTags(["Form"]));
+        } catch (error) {
+          console.error("Error creating form:", error);
+        }
       },
     }),
     getPublicFormData: builder.query({
@@ -30,16 +38,33 @@ const formApi = authApi.injectEndpoints({
       }),
     }),
     submitForm: builder.mutation({
-      query: (body) => {
-        return {
-          url: "/form-submits",
-          method: "POST",
-          body,
-        };
-      },
+      query: (body) => ({
+        url: "/form-submits",
+        method: "POST",
+        body,
+      }),
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        await queryFulfilled;
-        dispatch(authApi.util.invalidateTags(["Form"]));
+        try {
+          await queryFulfilled;
+          dispatch(authApi.util.invalidateTags(["Form"]));
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+      },
+    }),
+    updateForm: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `/forms/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      async onQueryStarted(_, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(authApi.util.invalidateTags(["Form"]));
+        } catch (error) {
+          console.error("Error updating form:", error);
+        }
       },
     }),
   }),
@@ -51,5 +76,8 @@ export const {
   useCreateFormMutation,
   useGetPublicFormDataQuery,
   useSubmitFormMutation,
+  useGetFormSubmissionsQuery,
+  useUpdateFormMutation,
 } = formApi;
+
 export default formApi;

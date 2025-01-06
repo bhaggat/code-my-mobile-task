@@ -7,7 +7,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { CopyIcon, ExternalLinkIcon } from "lucide-react";
+import { CopyIcon, ExternalLinkIcon, EyeIcon, PencilIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +29,7 @@ export default function Forms() {
   const { toast } = useToast();
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
+  const [editForm, setEditForm] = React.useState(null);
 
   React.useEffect(() => {
     const handler = setTimeout(() => {
@@ -83,12 +85,24 @@ export default function Forms() {
           return (
             <div className="flex space-x-2">
               <Button variant="outline" size="sm" onClick={handleCopy}>
-                <CopyIcon></CopyIcon>
+                <CopyIcon className="h-4 w-4" />
               </Button>
               <Button variant="primary" size="sm">
                 <a href={formUrl} target="_blank">
-                  <ExternalLinkIcon></ExternalLinkIcon>
+                  <ExternalLinkIcon className="h-4 w-4" />
                 </a>
+              </Button>
+              <Button variant="outline" size="sm">
+                <Link to={`/forms/${row.original.id}`}>
+                  <EyeIcon className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setEditForm(row.original)}
+              >
+                <PencilIcon className="h-4 w-4" />
               </Button>
             </div>
           );
@@ -112,12 +126,12 @@ export default function Forms() {
       <h1 className="text-2xl font-bold">Forms</h1>
       <div className="flex items-center justify-between py-4">
         <Input
-          placeholder="Search by name..."
+          placeholder="Search by title..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           className="max-w-sm"
         />
-        <CreateForm />
+        <CreateForm editForm={editForm} onClose={() => setEditForm(null)} />
       </div>
       <div className="rounded-md border relative">
         {isFetching && (

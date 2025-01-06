@@ -39,10 +39,8 @@ const PublicForm = () => {
     const formattedData = {
       email: formData.email,
       formId: data.data.id,
-      submittedData: Object.keys(formData).reduce((acc, key) => {
-        if (key !== "email") {
-          acc[key] = formData[key];
-        }
+      submittedData: data.data.fields.reduce((acc, { name, id }) => {
+        acc[id] = formData[name];
         return acc;
       }, {}),
     };

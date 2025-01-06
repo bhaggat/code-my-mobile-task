@@ -26,7 +26,7 @@ export const createField = async (req, res, next) => {
 
 export const getFields = async (req, res, next) => {
   try {
-    const { search, page = 1, limit = 10 } = req.query;
+    const { search = "", page = 1, limit = 10 } = req.query;
 
     const pageNumber = Number(page);
     const pageSize = Number(limit);
@@ -83,7 +83,7 @@ export const getFieldOptions = async (req, res, next) => {
 
 export const getField = async (req, res, next) => {
   try {
-    const field = await Field.findById(req.params.id, {
+    const field = await Field.findByPk(req.params.id, {
       where: { userId: req.userId },
     });
     if (!field) {
@@ -100,7 +100,7 @@ export const getField = async (req, res, next) => {
 
 export const updateField = async (req, res, next) => {
   try {
-    const field = await Field.findById(req.params.id, {
+    const field = await Field.findByPk(req.params.id, {
       where: { userId: req.userId },
     });
     if (!field) {
@@ -118,7 +118,7 @@ export const updateField = async (req, res, next) => {
 
 export const deleteField = async (req, res, next) => {
   try {
-    const field = await Field.findById(req.params.id, {
+    const field = await Field.findByPk(req.params.id, {
       where: { userId: req.userId },
     });
     if (!field) {

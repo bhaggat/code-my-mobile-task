@@ -34,7 +34,7 @@ const FormSubmit = sequelize.define(
   }
 );
 
-Form.hasMany(FormSubmit, { foreignKey: "formId", as: "submits" });
 FormSubmit.belongsTo(Form, { foreignKey: "formId", as: "form" });
+Form.hasMany(FormSubmit, { as: "submits", foreignKey: "formId" });
 
 export default FormSubmit;
