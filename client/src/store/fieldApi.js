@@ -20,9 +20,20 @@ const fieldApi = authApi.injectEndpoints({
         dispatch(authApi.util.invalidateTags(["Fields"]));
       },
     }),
+    getFieldOptions: builder.query({
+      providesTags: ["Fields"],
+      query: (params) => ({
+        url: "fields/options",
+        params,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useGetFieldsQuery, useCreateFieldMutation } = fieldApi;
+export const {
+  useGetFieldsQuery,
+  useCreateFieldMutation,
+  useGetFieldOptionsQuery,
+} = fieldApi;
 export default fieldApi;

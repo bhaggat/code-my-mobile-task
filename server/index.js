@@ -7,7 +7,6 @@ import rateLimit from "express-rate-limit";
 import authRouter from "./src/routes/authRouter.js";
 import fieldRouter from "./src/routes/fieldRouter.js";
 import { mongooseConnection } from "./src/dbs/mongoDb.js";
-import formFieldRouter from "./src/routes/formFieldRouter.js";
 import formSubmitRouter from "./src/routes/formSubmitRouter.js";
 import fileRouter from "./src/routes/fileRouter.js";
 import formRouter from "./src/routes/formRouter.js";
@@ -40,7 +39,6 @@ app.get("/version", (req, res) => res.json({ message: version }));
 
 app.use("/auth", authRouter);
 app.use("/fields", fieldRouter);
-app.use("/form-fields", formFieldRouter);
 app.use("/form-submits", formSubmitRouter);
 app.use("/files", fileRouter);
 app.use("/forms", formRouter);

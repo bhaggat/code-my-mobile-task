@@ -16,8 +16,8 @@ const Form = sequelize.define(
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
-    buttons: {
-      type: DataTypes.JSONB,
+    fields: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     },
     meta: {
@@ -31,6 +31,10 @@ const Form = sequelize.define(
         key: "id",
       },
       onDelete: "CASCADE",
+    },
+    publicId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
     },
   },
   {

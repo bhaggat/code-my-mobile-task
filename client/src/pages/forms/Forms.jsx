@@ -23,15 +23,8 @@ import Loader from "@/components/loader/Loader";
 
 export const columns = [
   {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "formType",
-    header: "Form Type",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.original.formType}</div>
-    ),
+    accessorKey: "title",
+    header: "Title",
   },
   {
     accessorKey: "createdAt",
@@ -40,6 +33,13 @@ export const columns = [
       const createdAt = new Date(row.original.createdAt);
       return createdAt.toLocaleString();
     },
+  },
+  {
+    accessorKey: "isEnabled",
+    header: "Enabled",
+    cell: ({ row }) => (
+      <div className="capitalize">{row.original.isEnabled ? "Yes" : "No"}</div>
+    ),
   },
 ];
 

@@ -10,9 +10,10 @@ export const createField = async (req, res, next) => {
       },
     });
     if (existingField) {
-      return res
-        .status(409)
-        .json({ success: false, message: "Field already exists!" });
+      return res.status(409).json({
+        success: false,
+        message: "Field already exists, with same name!",
+      });
     }
 
     const field = await Field.create({ ...req.body, userId: req.userId });
@@ -50,6 +51,29 @@ export const getFields = async (req, res, next) => {
         page: pageNumber,
         limit: pageSize,
       },
+    });
+  } catch (err) {
+    console.error("Error fetching fields:", err);
+    next(err);
+  }
+};
+
+export const getFieldOptions = async (req, res, next) => {
+  try {
+    const query = {
+      userId: req.userId,
+      isEnabled: true,
+    };
+
+    const fields = await Field.findAll({
+      where: query,
+      attributes: ["id", "name", "fieldType"],
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      success: true,
+      data: fields,
     });
   } catch (err) {
     console.error("Error fetching fields:", err);

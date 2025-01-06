@@ -3,6 +3,7 @@ import {
   createForm,
   deleteForm,
   getForm,
+  getFormByPublicId,
   getForms,
   updateForm,
 } from "../controllers/formController.js";
@@ -16,6 +17,7 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const formRouter = Router();
 
+formRouter.get("/public/:publicId", getFormByPublicId);
 formRouter.use(authMiddleware);
 
 formRouter.get("", getForms);
