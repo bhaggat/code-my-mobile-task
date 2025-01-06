@@ -4,16 +4,19 @@ const formApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
     getForms: builder.query({
       providesTags: ["Form"],
-      query: (params) => ({
+      query: ({ search = "", page = 1, limit = 10 } = {}) => ({
         url: "forms",
-        params,
+        params: {
+          search,
+          page,
+          limit,
+        },
       }),
     }),
     getFormSubmissions: builder.query({
       providesTags: ["Form"],
       query: (id) => ({
         url: `forms/${id}`,
-        params,
       }),
     }),
     createForm: builder.mutation({

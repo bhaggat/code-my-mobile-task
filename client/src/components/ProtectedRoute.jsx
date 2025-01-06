@@ -23,9 +23,5 @@ export default function ProtectedRoute() {
   if (!isPublic) {
     return <NonAuthWrapper />;
   }
-  return (
-    <div>
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 }

@@ -151,6 +151,7 @@ function CreateFormDialog({ handleClose, editForm }) {
       reset({
         title: editForm.title,
       });
+      setPublished(editForm.published);
       setSelectedFields(editForm.fields?.map((item) => Number(item)) || []);
     }
   }, [editForm, reset]);
@@ -164,11 +165,13 @@ function CreateFormDialog({ handleClose, editForm }) {
         response = await updateForm({
           id: editForm.id,
           ...data,
+          published,
           fields: selectedFields,
         });
       } else {
         response = await createForm({
           ...data,
+          published,
           fields: selectedFields,
         });
       }
@@ -204,18 +207,6 @@ function CreateFormDialog({ handleClose, editForm }) {
             register={register}
             error={errors?.title?.message}
           />
-
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="published"
-              onCheckedChange={setPublished}
-              checked={published}
-            />
-            <label htmlFor="published" className="text-sm font-medium">
-              Publish
-            </label>
-          </div>
-
           <div className="space-y-4">
             {!data?.data?.length && (
               <div className="flex items-center justify-between p-4 border rounded-md bg-slate-50">
@@ -231,7 +222,7 @@ function CreateFormDialog({ handleClose, editForm }) {
               </div>
             )}
             {selectedFields.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 h-[35vh] overflow-y-auto">
                 <h3 className="text-sm font-medium">Selected Fields:</h3>
                 <DndContext
                   sensors={sensors}
@@ -295,6 +286,16 @@ function CreateFormDialog({ handleClose, editForm }) {
             </Button>
           </div>
           <ValidationWrapper error={errors?.fields?.message} />
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="published"
+              onCheckedChange={setPublished}
+              checked={published}
+            />
+            <label htmlFor="published" className="text-sm font-medium">
+              Publish
+            </label>
+          </div>
         </div>
         <DialogFooter>
           <Button type="submit" isLoading={isCreating || isUpdating}>

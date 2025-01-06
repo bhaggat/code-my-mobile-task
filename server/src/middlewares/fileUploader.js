@@ -12,34 +12,32 @@ mongooseConnection.once("connected", () => {
   bucket = new mongoose.mongo.GridFSBucket(mongooseConnection.db);
   console.info("GridFSBucket initialized");
 });
-
 export const fileUploader = async (req, res, next) => {
-  if (req.body.fieldType === "file") {
-    upload.single("file")(req, res, async (err) => {
-      if (err) {
-        return res.status(400).json({
+  upload.array("files")(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        success: false,
+        message: "Error uploading files",
+      });
+    }
+
+    const files = req.files;
+    if (!files || files.length === 0) {
+      req.uploadedFileIds = [];
+      return next();
+    }
+
+    try {
+      if (!bucket) {
+        return res.status(500).json({
           success: false,
-          message: "Error uploading file",
+          message: "GridFSBucket not initialized",
         });
       }
 
-      const { file } = req;
-      if (!file) {
-        return res.status(400).json({
-          success: false,
-          message: "No file uploaded",
-        });
-      }
-
-      const { originalname, mimetype, buffer } = file;
-
-      try {
-        if (!bucket) {
-          return res.status(500).json({
-            success: false,
-            message: "GridFSBucket not initialized",
-          });
-        }
+      const uploadedFileIds = [];
+      for (const file of files) {
+        const { originalname, buffer } = file;
 
         const uploadStream = bucket.openUploadStream(originalname);
         const readBuffer = new Readable();
@@ -53,13 +51,21 @@ export const fileUploader = async (req, res, next) => {
             .on("error", reject);
         });
 
-        req.fileId = uploadStream.id;
-        next();
-      } catch (err) {
-        next(err);
+        uploadedFileIds.push(uploadStream.id);
       }
-    });
-  } else {
-    next();
-  }
+
+      req.uploadedFileIds = uploadedFileIds;
+
+      // Ensure `allFileIds` is an array (parse if needed)
+      if (typeof req.body.allFileIds === "string") {
+        req.body.allFileIds = JSON.parse(req.body.allFileIds);
+      } else if (!req.body.allFileIds) {
+        req.body.allFileIds = []; // Default to an empty array if not provided
+      }
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
 };

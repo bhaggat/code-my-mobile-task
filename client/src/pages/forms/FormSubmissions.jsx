@@ -63,6 +63,16 @@ export default function FormSubmissions() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const fieldsObjMap = React.useMemo(() => {
+    if (data?.data?.form?.fields) {
+      return data.data.form.fields.reduce((acc, field) => {
+        acc[`${field.id}`] = { ...field };
+        return acc;
+      }, {});
+    }
+    return {};
+  }, [data?.data?.form?.fields]);
+  console.log("fieldsObjMap", fieldsObjMap);
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-4">{data?.data?.form?.title}</h1>
@@ -118,36 +128,39 @@ export default function FormSubmissions() {
                       <AccordionContent>
                         <div className="px-4 py-3 bg-slate-50 border-t">
                           <div className="grid grid-cols-2 gap-4">
-                            {Object.keys(row.original.submittedData).map(
-                              (key) => {
-                                const value = row.original.submittedData[key];
-                                return (
-                                  <div
-                                    key={key}
-                                    className="flex flex-col p-2 bg-white rounded-md"
-                                  >
-                                    <span className="text-sm font-medium text-gray-500 mb-1">
-                                      {key}
-                                    </span>
-                                    <span className="text-sm">{value}</span>
-                                  </div>
-                                );
-                              }
-                            )}
+                            {Object.entries(
+                              JSON.parse(row.original.submittedData)
+                            ).map(([key, item]) => {
+                              return (
+                                <div
+                                  key={key}
+                                  className="flex flex-col p-2 bg-white rounded-md"
+                                >
+                                  <span className="text-sm font-medium text-gray-500 mb-1">
+                                    {`${fieldsObjMap[key].name} (${fieldsObjMap[key].fieldType})`}
+                                  </span>
+                                  <span className="text-sm">{item}</span>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </AccordionContent>
                     </AccordionItem>
                   ))
                 ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No submissions yet.
-                    </TableCell>
-                  </TableRow>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell
+                          colSpan={columns.length}
+                          className="h-24 text-center"
+                        >
+                          No submissions yet.
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 )}
               </Accordion>
             </div>

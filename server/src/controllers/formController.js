@@ -93,10 +93,27 @@ export const getForm = async (req, res, next) => {
         .json({ success: false, message: "Record not found" });
     }
 
+    const fieldIds = form.fields || [];
+    if (fieldIds.length === 0) {
+      return res
+        .status(200)
+        .json({ success: true, data: { ...form.toJSON(), fields: [] } });
+    }
+
+    const fields = await Field.findAll({
+      where: { id: { [Op.in]: fieldIds } },
+      attributes: ["id", "name", "fieldType"],
+    });
+
+    const formWithFields = {
+      ...form.toJSON(),
+      fields,
+    };
+
     res.status(200).json({
       success: true,
       data: {
-        form: form.toJSON(),
+        form: formWithFields,
         formSubmits: form.submits,
       },
     });
@@ -152,7 +169,6 @@ export const updateForm = async (req, res, next) => {
         id: { [Op.ne]: req.params.id },
       },
     });
-    console.log("form", existingForm);
     if (existingForm) {
       return res.status(409).json({
         success: false,

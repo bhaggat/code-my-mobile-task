@@ -155,3 +155,16 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.main-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
