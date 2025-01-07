@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware = (req, res, next) => {
   const token = req.headers["x-access-token"];
+  console.log("token", token);
   if (!token) {
     return res.status(403).json({
       success: false,

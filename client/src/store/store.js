@@ -6,7 +6,14 @@ const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore actions and paths that might have non-serializable values
+        ignoredActions: ["api/executeQuery/fulfilled"],
+        ignoredPaths: ["api.queries.readFile.data.blob"],
+      },
+    }).concat(authApi.middleware),
+  devTools: process.env.NODE_ENV !== "production", // Enable Redux DevTools only in development
 });
 
 export default store;

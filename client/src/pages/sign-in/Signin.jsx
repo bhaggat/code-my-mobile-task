@@ -33,9 +33,9 @@ const Signin = () => {
   const onSubmit = async (data) => {
     try {
       const response = await signin(data);
-      if (response?.data?.data?.accessToken) {
+      if (response?.data?.data?.token) {
         toast({ variant: "success", title: "Signin successful." });
-        setUser({ token: response?.data?.data?.accessToken });
+        setUser(response.data.data);
       } else {
         handleResponseError(response?.error);
       }

@@ -20,14 +20,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { ChevronDown } from "lucide-react";
 import Loader from "@/components/loader/Loader";
 import { useGetFormSubmissionsQuery } from "@/store/formApi";
+import FileViewer from "@/components/file-viewer/FileViewer";
 
 export default function FormSubmissions() {
   const { id } = useParams();
-  const { data, isLoading, isError, isFetching } =
-    useGetFormSubmissionsQuery(id);
+  const { data, isLoading, isError, isFetching } = useGetFormSubmissionsQuery(id);
 
   const columns = React.useMemo(
     () => [
@@ -72,7 +71,7 @@ export default function FormSubmissions() {
     }
     return {};
   }, [data?.data?.form?.fields]);
-  console.log("fieldsObjMap", fieldsObjMap);
+
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-4">{data?.data?.form?.title}</h1>
@@ -128,21 +127,26 @@ export default function FormSubmissions() {
                       <AccordionContent>
                         <div className="px-4 py-3 bg-slate-50 border-t">
                           <div className="grid grid-cols-2 gap-4">
-                            {Object.entries(
-                              JSON.parse(row.original.submittedData)
-                            ).map(([key, item]) => {
-                              return (
-                                <div
-                                  key={key}
-                                  className="flex flex-col p-2 bg-white rounded-md"
-                                >
-                                  <span className="text-sm font-medium text-gray-500 mb-1">
-                                    {`${fieldsObjMap[key].name} (${fieldsObjMap[key].fieldType})`}
-                                  </span>
-                                  <span className="text-sm">{item}</span>
-                                </div>
-                              );
-                            })}
+                            {Object.entries(row.original.submittedData).map(
+                              ([key, item]) => {
+                                const field = fieldsObjMap[key];
+                                return (
+                                  <div
+                                    key={key}
+                                    className="flex flex-col p-2 bg-white rounded-md"
+                                  >
+                                    <span className="text-sm font-medium text-gray-500 mb-1">
+                                      {`${field.name} (${field.fieldType})`}
+                                    </span>
+                                    {field.fieldType === "file" ? (
+                                      <FileViewer fileId={item} />
+                                    ) : (
+                                      <span className="text-sm">{item}</span>
+                                    )}
+                                  </div>
+                                );
+                              }
+                            )}
                           </div>
                         </div>
                       </AccordionContent>

@@ -13,16 +13,7 @@ import { useYupValidationResolver } from "@/hooks/useYupValidationResolver";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/loader/Loader";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_FILE_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
+import { ALLOWED_FILE_TYPES, MAX_FILE_SIZE } from "@/constants/constants";
 
 const PublicForm = () => {
   const param = useParams();

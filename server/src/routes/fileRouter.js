@@ -1,20 +1,9 @@
 import { Router } from "express";
-import mongoose from "mongoose";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { readFile, downloadFile } from "../controllers/fileController.js";
 
 const fileRouter = Router();
-fileRouter.get("/files/:fileId", authMiddleware, (req, res) => {
-  const { fileId } = req.params;
-
-  const downloadStream = bucket.openDownloadStream(
-    new mongoose.Types.ObjectId(fileId)
-  );
-
-  downloadStream.on("file", (file) => {
-    res.set("Content-Type", file.contentType);
-  });
-
-  downloadStream.pipe(res);
-});
+fileRouter.get("/:fileId", authMiddleware, readFile);
+fileRouter.get("/:fileId/download", authMiddleware, downloadFile);
 
 export default fileRouter;

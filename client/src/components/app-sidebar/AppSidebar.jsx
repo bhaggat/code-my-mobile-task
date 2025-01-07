@@ -39,8 +39,7 @@ const items = [
 
 export function AppSidebar() {
   const { pathname } = useLocation();
-  const { removeUser } = useUser();
-
+  const { removeUser, userData } = useUser();
   const handleLogout = () => {
     removeUser();
   };
@@ -69,6 +68,13 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        {userData?.name && (
+          <div className="px-2 py-2 mb-2 rounded-md bg-sidebar-accent/50">
+            <span className="text-sm font-medium">
+              👋 Hello, {userData.name}!
+            </span>
+          </div>
+        )}
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>

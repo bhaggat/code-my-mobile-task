@@ -24,6 +24,7 @@ app.use(
   })
 );
 app.use(cors({ origin: "*" }));
+
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
@@ -42,6 +43,11 @@ app.use("/fields", fieldRouter);
 app.use("/form-submits", formSubmitRouter);
 app.use("/files", fileRouter);
 app.use("/forms", formRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+});
 
 app.listen(PORT, () => {
   console.info(`Server running at http://localhost:${PORT}`, { version });

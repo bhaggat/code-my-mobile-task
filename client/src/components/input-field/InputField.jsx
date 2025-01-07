@@ -37,6 +37,14 @@ export const InputField = ({
             </option>
           ))}
         </select>
+      ) : type === "textarea" ? (
+        <textarea
+          id={id}
+          {...register(name)}
+          placeholder={placeholder}
+          className="w-full rounded-md border px-3 py-2 text-sm focus:ring focus:ring-offset-1"
+          {...inputProps}
+        />
       ) : (
         <Input
           id={id}

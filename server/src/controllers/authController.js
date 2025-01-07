@@ -61,11 +61,33 @@ export async function signin(req, res, next) {
         id: user.id,
         name: user.name,
         email: user.email,
-        accessToken: token,
+        token: token,
       },
     });
   } catch (err) {
     console.error("Signin Error:", err);
+    next(err);
+  }
+}
+export async function init(req, res, next) {
+  try {
+    const user = await User.findByPk(req.userId);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error("Init Error:", err);
     next(err);
   }
 }
