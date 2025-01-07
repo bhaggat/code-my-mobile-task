@@ -1,9 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router";
-import {
-  authRoutes,
-  nonAuthRoutes,
-  publicRoutes,
-} from "../../server/src/constants/routes";
+import { authRoutes, nonAuthRoutes, publicRoutes } from "./services/routes";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const routes = [...publicRoutes, ...nonAuthRoutes, ...authRoutes];

@@ -1,5 +1,5 @@
 import NonAuthWrapper from "@/layouts/non-auth-wrapper/NonAuthWrapper";
-import { authRoutes, publicRoutes } from "../../../server/src/constants/routes";
+import { authRoutes, publicRoutes } from "../services/routes";
 import { useUser } from "../context/UserContext";
 import { matchRoutes, Navigate, Outlet, useLocation } from "react-router";
 import AuthWrapper from "@/layouts/auth-wrapper/AuthWrapper";

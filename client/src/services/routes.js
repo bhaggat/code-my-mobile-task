@@ -1,9 +1,9 @@
 import FormSubmissions from "@/pages/forms/FormSubmissions";
-import Fields from "../../../client/src/pages/fields/Fields";
-import Forms from "../../../client/src/pages/forms/Forms";
-import PublicForm from "../../../client/src/pages/public-form/PublicForm";
-import Signin from "../../../client/src/pages/sign-in/Signin";
-import Signup from "../../../client/src/pages/sign-up/Signup";
+import Fields from "../pages/fields/Fields";
+import Forms from "../pages/forms/Forms";
+import PublicForm from "../pages/public-form/PublicForm";
+import Signin from "../pages/sign-in/Signin";
+import Signup from "../pages/sign-up/Signup";
 
 export const nonAuthRoutes = [
   { path: "/signin", Component: Signin },
