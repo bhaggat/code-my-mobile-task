@@ -23,10 +23,34 @@ import {
 import Loader from "@/components/loader/Loader";
 import { useGetFormSubmissionsQuery } from "@/store/formApi";
 import FileViewer from "@/components/file-viewer/FileViewer";
+import { FormActions } from "./FormActions";
+import { ArrowLeftCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const Header = ({ data }) => {
+  console.log(data);
+  const form = data?.data?.form;
+
+  return (
+    <header className="bg-gray-100 shadow-md p-6 rounded-md mb-6">
+      <div className="flex justify-between items-center">
+        <div className="flex flex-row items-center space-x-2">
+          <Button onClick={() => window.history.back()}>
+            <ArrowLeftCircle className="h-5 w-5 mr-2" />
+            Back
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-800">{form?.title}</h1>
+        </div>
+        <FormActions {...form} hideView={true} />
+      </div>
+    </header>
+  );
+};
 
 export default function FormSubmissions() {
   const { id } = useParams();
-  const { data, isLoading, isError, isFetching } = useGetFormSubmissionsQuery(id);
+  const { data, isLoading, isError, isFetching } =
+    useGetFormSubmissionsQuery(id);
 
   const columns = React.useMemo(
     () => [
@@ -74,7 +98,11 @@ export default function FormSubmissions() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-bold mb-4">{data?.data?.form?.title}</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        <Header data={data} />
+        {/* {data?.data?.form?.title}
+        <FormActions {...data?.data?.form} /> */}
+      </h1>
       <div className="rounded-md border relative">
         {isFetching && (
           <div className="absolute justify-center align-center p-6 flex w-full">

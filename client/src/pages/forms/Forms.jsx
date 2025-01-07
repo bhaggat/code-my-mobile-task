@@ -33,9 +33,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { FormActions } from "./FormActions";
 
 export default function Forms() {
-  const { toast } = useToast();
   const [page, setPage] = React.useState(1);
   const [search, setSearch] = React.useState("");
   const [debouncedSearch, setDebouncedSearch] = React.useState("");
@@ -109,39 +109,13 @@ export default function Forms() {
         accessorKey: "actions",
         header: "Actions",
         cell: ({ row }) => {
-          const publicId = row.original.publicId;
-          const formUrl = `${location.origin}/public/forms/${publicId}`;
-          const handleCopy = () => {
-            navigator.clipboard.writeText(formUrl).then(() => {
-              toast({
-                title: "Copied to clipboard",
-              });
-            });
-          };
-
           return (
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm" onClick={handleCopy}>
-                <CopyIcon className="h-4 w-4" />
-              </Button>
-              <a href={formUrl} target="_blank">
-                <Button variant="primary" size="sm">
-                  <ExternalLinkIcon className="h-4 w-4" />
-                </Button>
-              </a>
-              <Link to={`/forms/${row.original.id}`}>
-                <Button variant="outline" size="sm">
-                  <EyeIcon className="h-4 w-4" />
-                </Button>
-              </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setEditForm(row.original)}
-              >
-                <PencilIcon className="h-4 w-4" />
-              </Button>
-            </div>
+            <FormActions
+              {...row.original}
+              onEditClick={() => {
+                setEditForm(row.original);
+              }}
+            />
           );
         },
       },
