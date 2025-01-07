@@ -11,7 +11,6 @@ This is a full-stack project combining a **React.js frontend** and a **Node.js b
 /project-root
 /client # React frontend
 /server # Node.js backend
-Dockerfile # Multi-stage Dockerfile for both client and server
 docker-compose.yml (optional) # For running services
 
 ```

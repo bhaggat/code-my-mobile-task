@@ -1,9 +1,52 @@
 version: "3.9"
 
 services:
-  app:
+  client:
     build:
-      context: .
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    stdin_open: true
+
+  server:
+    build:
+      context: ./server
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - DB_PORT=5432
+      - DB_HOST=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=123456
+      - DB_NAME=myappdb
+      - JWT_SECRET=yourjwtsecret
+      - MONGO_DB_CONNECTION=mongodb+srv://test:test@cluster0.hupmg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: myappdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data # This refers to the volume
+    restart: always
+volumes:
+  pgdata: # Define the volume here
+    driver: local
