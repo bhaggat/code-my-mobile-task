@@ -10,43 +10,55 @@ services:
     volumes:
       - ./client:/app
       - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:8080
-    stdin_open: true
+    depends_on:
+      - server
 
   server:
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
-      - "5000:5000"
-    volumes:
-      - ./server:/app
-      - /app/node_modules
+      - "8080:8080"
     environment:
-      - NODE_ENV=development
       - PORT=8080
-      - DB_PORT=5432
       - DB_HOST=postgres
       - DB_USER=postgres
-      - DB_PASSWORD=123456
-      - DB_NAME=myappdb
+      - DB_PASSWORD=password
+      - DB_NAME=mydatabase
+      - DB_PORT=5432
       - JWT_SECRET=yourjwtsecret
-      - MONGO_DB_CONNECTION=mongodb+srv://test:test@cluster0.hupmg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - MONGO_DB_CONNECTION=mongodb://mongo:27017/myappdb
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_started
 
   postgres:
     image: postgres:15
+    container_name: postgresdb
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: myappdb
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data # This refers to the volume
-    restart: always
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mongo:
+    image: mongo:6
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
 volumes:
-  pgdata: # Define the volume here
-    driver: local
+  postgres_data:
+  mongo_data:

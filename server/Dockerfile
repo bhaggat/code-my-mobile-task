@@ -1,20 +1,20 @@
-# Use an official Node.js runtime as a parent image
+# Base image
 FROM node:20
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files
 COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire server project
+# Copy project files
 COPY . .
 
-# Expose port 5000 (adjust if your server runs on a different port)
-EXPOSE 5000
+# Expose the port
+EXPOSE 8080
 
-# Run the server in development mode
+# Start the server
 CMD ["npm", "run", "dev"]

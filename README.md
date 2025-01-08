@@ -60,7 +60,7 @@ git clone https://github.com/bhaggat/code-my-mobile-task
 cd code-my-mobile-task
 ```
 
-### 2. Install Dependencies
+### 2. Install Dependencies (Manually)
 
 #### Frontend
 
@@ -116,23 +116,62 @@ npm run dev
 
 ## **Using Docker**
 
-### 1. Build the Docker Image
+### Using Docker Compose (Recommended)
 
-```bash
-docker build -t fullstack-app .
-```
+The application is containerized using Docker Compose with the following services:
 
-### 2. Run the Container
+- Frontend (React)
+- Backend (Node.js/Express)
+- PostgreSQL Database
+- MongoDB Database
 
-```bash
-docker run -p 5000:5000 fullstack-app
-```
-
-### (Optional) Using Docker Compose
+1. Start all services:
 
 ```bash
 docker-compose up --build
 ```
+
+2. Access the applications:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8080
+
+### Environment Variables
+
+The Docker Compose configuration already includes the necessary environment variables. However, if you need to modify them:
+
+#### Server Environment Variables
+
+```env
+PORT=8080
+DB_HOST=postgres
+DB_USER=postgres
+DB_PASSWORD=password
+DB_NAME=mydatabase
+DB_PORT=5432
+JWT_SECRET=yourjwtsecret
+MONGO_DB_CONNECTION=mongodb://mongo:27017/myappdb
+```
+
+#### Database Credentials
+
+- PostgreSQL:
+
+  - User: postgres
+  - Password: password
+  - Database: mydatabase
+  - Port: 5432
+
+- MongoDB:
+  - Port: 27017
+  - Connection string: mongodb://mongo:27017/myappdb
+
+### Persistent Data
+
+The application uses Docker volumes for database persistence:
+
+- `postgres_data`: PostgreSQL data
+- `mongo_data`: MongoDB data
 
 ---
 

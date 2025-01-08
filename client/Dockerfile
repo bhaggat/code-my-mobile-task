@@ -1,20 +1,20 @@
-# Use an official Node.js runtime as a parent image
-FROM node:20
+# Base image
+FROM node:20-alpine
 
-# Set the working directory
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package.json package-lock.json ./
+# Copy package files
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the entire client project
+# Copy project files
 COPY . .
 
-# Expose port 5173 for Vite development server
+# Expose the port
 EXPOSE 5173
 
-# Run the development server
+# Run the app
 CMD ["npm", "run", "dev"]
