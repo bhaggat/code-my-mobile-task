@@ -51,7 +51,9 @@ git clone https://github.com/bhaggat/code-my-mobile-task
 cd code-my-mobile-task
 ```
 
-### 2. Using Docker (Recommended)
+### 2. Run application
+
+#### Using Docker (Recommended)
 
 1. Start all services:
 
@@ -64,7 +66,7 @@ docker-compose up --build
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8080
 
-#### Environment Variables
+#### Manually
 
 Create a `.env` file in both directories:
 
@@ -87,9 +89,7 @@ MONGO_DB_CONNECTION=mongodb://mongo:27017/myappdb
 VITE_API_URL=http://localhost:8080
 ```
 
-### 3. Manual Setup (Alternative)
-
-#### Frontend
+##### Frontend
 
 ```bash
 cd client
@@ -97,7 +97,7 @@ npm install
 npm run dev
 ```
 
-#### Backend
+##### Backend
 
 ```bash
 cd server
