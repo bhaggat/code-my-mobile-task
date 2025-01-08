@@ -2,56 +2,47 @@
 
 This is a full-stack project combining a **React.js frontend** and a **Node.js backend**. The application is built to manage forms, submissions, and API interactions. It uses **PostgreSQL** as the database, **TailwindCSS** for styling, and Docker for containerization.
 
----
+> **Note**: AI tools were only used for creating the README, Docker configuration, and file upload functionalities. The frontend utilizes Shadcn components to accelerate development.
 
 ## **Project Structure**
 
 ```
-
 /project-root
-/client # React frontend
-/server # Node.js backend
-docker-compose.yml (optional) # For running services
-
+├── /client     # React frontend
+├── /server     # Node.js backend
+└── docker-compose.yml
 ```
-
----
 
 ## **Technologies Used**
 
-### Frontend (React.js)
+### Frontend
 
-- **React 18**: A modern JavaScript library for building user interfaces.
-- **TailwindCSS**: Utility-first CSS framework for styling.
-- **React Router**: For routing.
-- **Redux Toolkit**: State management.
-- **Form Handling**: Using libraries like `react-hook-form` and validation with `yup`.
+- React 18
+- TailwindCSS
+- React Router
+- Redux Toolkit
+- Shadcn UI Components
+- Form handling: `react-hook-form` + `yup`
 
-### Backend (Node.js)
+### Backend
 
-- **Express.js**: Web framework.
-- **Sequelize**: ORM for PostgreSQL database interactions.
-- **Security**: Helmet, CORS, and JWT for authentication.
-- **Multer**: For file uploads.
-- **Validation**: Joi for schema validation.
+- Express.js
+- Sequelize (PostgreSQL ORM)
+- Security: Helmet, CORS, JWT
+- Multer (file uploads)
+- Joi validation
 
 ### Database
 
-- **PostgreSQL**: Relational database.
-
-### Containerization
-
-- **Docker**: For bundling both the client and server into a single image.
-
----
+- PostgreSQL
 
 ## **Getting Started**
 
 ### Prerequisites
 
-- **Node.js** (v18 or higher)
-- **npm** or **yarn**
-- **Docker** (optional for containerized development)
+- Node.js (v20)
+- npm or yarn
+- Docker (optional)
 
 ### 1. Clone the Repository
 
@@ -60,70 +51,7 @@ git clone https://github.com/bhaggat/code-my-mobile-task
 cd code-my-mobile-task
 ```
 
-### 2. Install Dependencies (Manually)
-
-#### Frontend
-
-```bash
-cd client
-npm install
-```
-
-#### Backend
-
-```bash
-cd server
-npm install
-```
-
-### 3. Configure Environment Variables
-
-Create a `.env` file in both `client` and `server` directories. For example:
-
-#### `server/.env`
-
-```
-PORT=8080
-DB_HOST=localhost
-DB_USER=postgres
-DB_PASSWORD=123456
-DB_NAME=myappdb
-JWT_SECRET=yourjwtsecret
-MONGO_DB_CONNECTION=mongodb://localhost:27017/yourdb
-```
-
-#### `client/.env`
-
-```
-VITE_API_URL = http://localhost:8080
-```
-
-### 4. Run Locally
-
-#### Frontend
-
-```bash
-cd client
-npm run dev
-```
-
-#### Backend
-
-```bash
-cd server
-npm run dev
-```
-
-## **Using Docker**
-
-### Using Docker Compose (Recommended)
-
-The application is containerized using Docker Compose with the following services:
-
-- Frontend (React)
-- Backend (Node.js/Express)
-- PostgreSQL Database
-- MongoDB Database
+### 2. Using Docker (Recommended)
 
 1. Start all services:
 
@@ -136,11 +64,11 @@ docker-compose up --build
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8080
 
-### Environment Variables
+#### Environment Variables
 
-The Docker Compose configuration already includes the necessary environment variables. However, if you need to modify them:
+Create a `.env` file in both directories:
 
-#### Server Environment Variables
+`server/.env`:
 
 ```env
 PORT=8080
@@ -153,28 +81,30 @@ JWT_SECRET=yourjwtsecret
 MONGO_DB_CONNECTION=mongodb://mongo:27017/myappdb
 ```
 
-#### Database Credentials
+`client/.env`:
 
-- PostgreSQL:
+```env
+VITE_API_URL=http://localhost:8080
+```
 
-  - User: postgres
-  - Password: password
-  - Database: mydatabase
-  - Port: 5432
+### 3. Manual Setup (Alternative)
 
-- MongoDB:
-  - Port: 27017
-  - Connection string: mongodb://mongo:27017/myappdb
+#### Frontend
 
-### Persistent Data
+```bash
+cd client
+npm install
+npm run dev
+```
 
-The application uses Docker volumes for database persistence:
+#### Backend
 
-- `postgres_data`: PostgreSQL data
-- `mongo_data`: MongoDB data
-
----
+```bash
+cd server
+npm install
+npm run dev
+```
 
 ## **License**
 
-This project is licensed under the MIT License. See `LICENSE` for more information.
+This project is licensed under the MIT License.
